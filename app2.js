@@ -32,7 +32,7 @@ $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
 $computer.style.backgroundSize = "auto 200px";
 };
 
-let intervalId = setInterval(changeComputerHand, 1000);
+let intervalId = setInterval(changeComputerHand, 80);
 
 let me = 0;
 let computer = 0;
@@ -46,48 +46,39 @@ const clickBtn = (e) => {
       : e.target.innerText === "가위"
       ? "scissors"
       : "paper";
+
       // 보 = 2, 바위 = 1, 가위 = 0
-      // 숫자가 크면 승리
-      // 단, 가위와 보만 예외 - 가위는 보를 이기지만 가위(0) < 보(2)
+      // 승리(숫자가 크면) - -2 또는 1
+      // 나 보2 컴퓨터 바위1 = 1
+      // 나 가위0 컴퓨터 보2 = -2
+ 
+      // 패배 = -1 또는 2
+      // 나 보2 컴퓨터 가위0 = 2
+      // 나 바위1 컴퓨터 보2 = -1
       const myScore = scoreTable[myChoice];
       const computerScore = scoreTable[computerChoice];
-      if(myScore > computerScore){ // 보2 바위1 가위0
-        if(myScore === 2 && computerScore === 0){
-          console.log("패배!");
-          computer += 1;
-        } else {
-          console.log("승리!");
+      const diff = myScore - computerScore;
+        if([-2, 1].includes(diff)){ // 승리조건
           me += 1;
-        }
-        $score.innerText = `My Score : ${me} / Computer Score : ${computer}`;
-      } else if(myScore < computerScore){
-        if(myScore === 0 && computerScore === 2){
-          console.log("승리!");
-          me += 1;
-        } else {
-          console.log("패배!");
-          computer += 1;
-        }
-        $score.innerText = `My Score : ${me} / Computer Score : ${computer}`;
-      } else if(myScore === computerScore){
-        console.log("무승부!");
-        $score.innerText = `My Score : ${me} / Computer Score : ${computer}`;
+          $score.innerText = `승리! My Score : ${me} / Computer Score : ${computer}`;
+      } else if([-1, 2].includes(diff)){ // 패배조건
+        computer += 1;
+        $score.innerText = `패배! My Score : ${me} / Computer Score : ${computer}`;
+      } else if(diff === 0){
+        $score.innerText = `무승부! My Score : ${me} / Computer Score : ${computer}`;
       }
-
-    setTimeout(() => {
-      clearInterval(intervalId); // 버그 방지
-      clickalbe = true;
-      intervalId = setInterval(changeComputerHand, 1000);
-    }, 1000);
+    if(me === 3){
+      alert("우승을 축하합니다!");
+    } else if(computer === 3) {
+      alert("탈락! 재도전하시겠습니까?");
+    } else {
+      setTimeout(() => {
+        clearInterval(intervalId);
+        clickalbe = true;
+        intervalId = setInterval(changeComputerHand, 80);
+      }, 1000);
+    }
   };
-
-  if(me === 3) {
-    alert("우승을 축하합니다!");
-    clearInterval(intervalId);
-    clickalbe = false;
-  } else if(computer === 3){
-    alert("최종 탈락! 재도전을 하시겠습니까?");
-  }
 };
 
 $scissors.addEventListener("click", clickBtn);
